@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper 
+   PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+   
+<mapper namespace="com.project.culture.movie.MovieService">
+	<resultMap type="com.project.culture.movie.Movie" id="Movie">
+	                 
+	 
+		<result property="movieId"				column="MOVIE_ID" />
+		<result property="titleKor"				column="TITLE_KOR" />
+		<result property="titleEng"				column="TITLE_ENG" />
+		<result property="genre"				column="GENRE" />
+		<result property="originalLanguage"		column="ORIGINAL_LANGUAGE" />
+		<result property="overview"				column="OVERVIEW" />
+		<result property="releaseDate"			column="RELEASE_DATE" />
+		<result property="backdropImagePath"	column="BACKDROP_IMAGE_PATH" />
+		<result property="posterImagePath"		column="POSTER_IMAGE_PATH" />
+		<result property="voteCount"			column="VOTE_COUNT" />
+		<result property="voteAverage"			column="VOTE_AVERAGE" />
+		<result property="adult"				column="ADULT" />
+		<result property="rank"					column="RANK" />
+		<result property="regDate"				column="REG_DATE" />
+	 	
+		
+	<!--
+		<result property="movieId"				column="movie_Id" />
+		<result property="titleKor"				column="title_Kor" />
+		<result property="titleEng"				column="title_Eng" />
+		<result property="genre"				column="genre" />
+		<result property="overview"				column="overview" />
+		<result property="releaseDate"			column="release_Date" />
+		<result property="backdropImagePath"	column="backdrop_Image_Path" />
+		<result property="posterImagePath"		column="poster_Image_Path" />
+		<result property="voteCount"			column="vote_Count" />
+		<result property="voteAverage"			column="vote_Average" />
+		<result property="rank"					column="rank" />
+		<result property="regDate"				column="reg_Date" />
+		-->
+	</resultMap>
+
+	<insert id="insertMovie" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="movieId">
+	
+	
+	<!-- 
+		INSERT 할때 'The expression 'list' evaluated to a null value.' 오류가 뜸
+		해결하기
+	 -->
+	
+	
+		INSERT INTO MOVIE (
+				TITLE_KOR, TITLE_ENG, GENRE, ORIGINAL_LANGUAGE ,OVERVIEW, RELEASE_DATE, BACKDROP_IMAGE_PATH, POSTER_IMAGE_PATH, VOTE_COUNT, VOTE_AVERAGE, ADULT, REG_DATE
+			) 
+			VALUES
+			<foreach collection="list" item="movie" separator=",">
+				 (
+					#{movie.titleKor}, #{movie.titleEng}, #{movie.genre}, #{movie.originalLanguage}, #{movie.overview}, #{movie.releaseDate}, 
+					#{movie.backdropImagePath}, #{movie.posterImagePath}, #{movie.voteCount}, #{movie.voteAverage}, #{movie.adult}, now()
+				)		
+			</foreach>
+		<!-- 
+		SELECT	* FROM DUAL;
+		SELECT 	#{titleKor}, #{titleEng}
+		FROM	DUAL
+		WHERE	NOT EXISTS (
+			SELECT	TITLE_KOR, TITLE_ENG
+			FROM	MOVIE
+			WHERE	TITLE_KOR = #{titleKor}
+			AND		TITLE_ENG = #{titleEng}
+		)
+		 -->		
+	</insert>
+
+	<select id="getMovieList" resultMap="Movie">
+		SELECT	MOVIE_ID, TITLE_KOR, TITLE_ENG, GENRE, OVERVIEW, RELEASE_DATE, BACKDROP_IMAGE_PATH, POSTER_IMAGE_PATH, VOTE_COUNT, VOTE_AVERAGE, RANK, REG_DATE
+		FROM	MOVIE
+		WHERE	titleKor = #{TITLE_KOR}
+		AND		titleEng = #{TITLE_ENG}
+	</select>
+
+	<select id="getAlltMovieList" resultMap="Movie" parameterType="String">
+		<!-- SELECT	movieId, titleKor, titleEng, genre, overview, releaseDate, backdropImagePath, posterImagePath, voteCount, voteAverage, rank, regDate  -->
+		SELECT	*
+		FROM	MOVIE
+	</select>
+</mapper>
