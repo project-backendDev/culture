@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+   
+   
+<mapper namespace="com.project.culture.board.BoardService">
+	<resultMap type="com.project.culture.board.BoardConfig" id="BoardConfig">
+		<result property="configSeq"		column="CONFIG_SEQ" />
+		<result property="boardNm"			column="BOARD_NM" />
+		<result property="boardUseYn"		column="BOARD_USE_YN" />
+		<result property="commentUseYn"		column="COMMENT_USE_YN" />
+		<result property="editorUseYn"		column="EDITOR_USE_YN" />
+		<result property="anonymousUseYn"	column="ANONYMOUS_USE_YN" />
+		<result property="secretUseYn"		column="SECRET_USE_YN" />
+		<result property="regDate"			column="REG_DATE" />
+		<result property="editDate"			column="EDIT_DATE" />
+	</resultMap>
+	
+	<resultMap type="com.project.culture.board.BoardArtcl" id="BoardArtcl">
+		<result property="boardSeq"			column="BOARD_SEQ" />
+		<result property="configSeq"		column="CONFIG_SEQ" />
+		<result property="title"			column="TITLE" />
+		<result property="content"			column="CONTENT" />
+		<result property="writer"			column="WRITER" />
+		<result property="regDate"			column="REG_DATE" />
+		<result property="editDate"			column="EDIT_DATE" />
+		<result property="viewCo"			column="VIEW_CO" />
+		<result property="ip"				column="IP" />
+		<result property="thumbOriginNm"	column="THUMB_ORIGIN_NM" />
+		<result property="thumnChangeNm"	column="THUMB_CHANGE_NM" />
+		<result property="thumbPath"		column="THUMB_PATH" />
+		<result property="trashYn"			column="TRASH_YN" />
+		<result property="addItem01"		column="ADD_ITEM01" />
+		<result property="addItem02"		column="ADD_ITEM02" />
+		<result property="addItem03"		column="ADD_ITEM03" />
+		<result property="addItem04"		column="ADD_ITEM04" />
+		<result property="addItem05"		column="ADD_ITEM05" />
+	</resultMap>
+	
+	<resultMap type="com.project.culture.board.BoardAttachment" id="BoardAttachment">
+		<result property="attachmentSeq"	column="ATTACHMENT_SEQ" />
+		<result property="boardSeq"			column="BOARD_SEQ" />
+		<result property="originalNm"		column="ORIGINAL_NM" />
+		<result property="changeNm"			column="CHANGE_NM" />
+		<result property="regDate"			column="REG_DATE" />
+		<result property="fileSize"			column="FILE_SIZE" />
+	</resultMap>
+	
+	<!-- (사용자) 게시판 설정 시퀀스 번호에 맞는 게시글 조회 -->
+	<select id="getArtclList" resultMap="BoardArtcl">
+		SELECT	BOARD_SEQ, CONFIG_SEQ, TITLE, CONTENT, WRITER, REG_DATE, EDIT_DATE, VIEW_CO, IP, THUMB_ORIGIN_NM, THUMB_CHANGE_NM, THUMB_PATH, 
+				TRASH_YN, ADD_ITEM01, ADD_ITEM02, ADD_ITEM03, ADD_ITEM04, ADD_ITEM05
+		FROM	BOARD_ARTCLE
+		WHERE	CONFIG_SEQ = #{configSeq}
+	</select>
+	
+	<!-- (사용자) 게시판 시퀀스 번호 조회 -->
+	<select id="getBoardSeq" resultMap="BoardConfig">
+		SELECT	CONFIG_SEQ
+		FROM	BOARD_CONFIG
+		WHERE	CONFIG_SEQ = #{configSeq}
+	</select>
+	
+	<!-- (사용자) 게시글 작성 -->
+	<insert id="artclRegist" parameterType="com.project.culture.board.BoardArtcl"
+		useGeneratedKeys="true" keyProperty="boardSeq">
+		INSERT INTO BOARD_ARTCLE (
+			CONFIG_SEQ, TITLE, CONTENT, WRITER, REG_DATE, EDIT_DATE, VIEW_CO, IP, THUMB_ORIGIN_NM, THUMB_CHANGE_NM, THUMB_PATH, 
+			TRASH_YN, ADD_ITEM01, ADD_ITEM02, ADD_ITEM03, ADD_ITEM04, ADD_ITEM05
+		) VALUES (
+			#{configSeq}, #{title}, #{content}, #{writer}, now(), now(), 0, #{ip},
+			<choose>
+				<when test="thumbOriginNm == null or thumbOriginNm == ''">
+					null, null, null,
+				</when>
+				<otherwise>
+					#{thumbOriginNm}, #{thumnChangeNm}, #{thumbPath},
+				</otherwise>
+			</choose>
+			'N', #{addItem01}, #{addItem02}, #{addItem03}, #{addItem04}, #{addItem05}
+		)
+	</insert>
+	
+	
+	
+	
+	<!-- (관리자) 게시판 설정 추가 -->
+	<insert id="configRegist" parameterType="com.project.culture.board.BoardConfig"
+		useGeneratedKeys="true" keyProperty="configSeq">
+		INSERT INTO BOARD_CONFIG (
+			BOARD_NM, BOARD_USE_YN, COMMENT_USE_YN, ANONYMOUS_USE_YN, SECRET_USE_YN, REG_DATE, EDIT_DATE
+		) VALUES (
+			#{boardNm}, #{boardUseYn}, #{commentUseYn}, #{anonymousUseYn}, #{secretUseYn}, now(), now()
+		)
+	</insert>
+	
+	<!-- (관리자) 게시판 설정 전체 조회 -->
+	<select id="getConfigList" resultMap="BoardConfig">
+		SELECT	CONFIG_SEQ, BOARD_NM, BOARD_USE_YN, COMMENT_USE_YN, EDITOR_USE_YN, ANONYMOUS_USE_YN, SECRET_USE_YN, REG_DATE, EDIT_DATE
+		FROM	BOARD_CONFIG
+	</select>
+	
+	
+	<!-- (관리자) 특정 게시판 설정 시퀀스로 조회 -->
+	<select id="selectByConfigSeq" resultMap="BoardConfig">
+		SELECT	CONFIG_SEQ, BOARD_NM, BOARD_USE_YN, COMMENT_USE_YN, EDITOR_USE_YN, ANONYMOUS_USE_YN, SECRET_USE_YN, REG_DATE, EDIT_DATE
+		FROM	BOARD_CONFIG
+		WHERE	CONFIG_SEQ = #{configSeq}
+	</select>
+	
+	<!-- (관리자) 게시판 수정 -->
+	<update id="configUpdate" parameterType="com.project.culture.board.BoardConfig">
+		UPDATE	BOARD_CONFIG
+		SET		BOARD_NM = #{boardNm}, BOARD_USE_YN = #{boardUseYn}, COMMENT_USE_YN = #{commentUseYn}, EDITOR_USE_YN = #{editorUseYn},
+				ANONYMOUS_USE_YN = #{anonymousUseYn}, SECRET_USE_YN = #{secretUseYn}, EDIT_DATE = now()
+		WHERE	CONFIG_SEQ = #{configSeq}
+	</update> 
+	
+	<!-- (관지) 게시판 삭제 -->
+	<delete id="deleteConfig" parameterType="int">
+		DELETE	FROM BOARD_CONFIG
+		WHERE	CONFIG_SEQ = #{configSeq}
+	</delete>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page trimDirectiveWhitespaces="true"%>
 <!DOCTYPE html>
 <html>
@@ -22,6 +23,21 @@
 	</script>
 </head>
 <body>
+
+	<div>
+		<c:choose>
+			<c:when test="${configList != null && fn:length(configList) > 0 }">
+				<c:forEach var="list" items="${configList }" varStatus="staus">
+					<span style="border: 1px solid red; padding-right: 10px;">
+						<a href="${pageContext.request.contextPath }/board/${list.configSeq}/artclList">
+							${list.boardNm }				
+						</a>
+					</span>
+				</c:forEach>
+			</c:when>
+		</c:choose>
+	</div>
+
 	메인 페이지
 	
 	<c:choose>

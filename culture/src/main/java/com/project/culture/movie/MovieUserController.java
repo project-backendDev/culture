@@ -55,7 +55,7 @@ public class MovieUserController {
 	@RequestMapping("/movieList")
 	public List<Movie> movieList(ModelMap model, @RequestParam(value="page", defaultValue = "1") int page) {
 		System.out.println("[S] Controller	Start!!!!!");
-		Instant start = Instant.now();
+//		Instant start = Instant.now();
 		
 		Date today = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -104,9 +104,9 @@ public class MovieUserController {
 					}
 					
 					movie = new Movie(title, originTitle, genre, originLanguage, overview, releaseDate, backdropPath, posterPath, voteCnt, voteAvg, adult, rank, "");
-					movieList.add(movie);
 					
 				}
+				movieList.add(movie);
 				// 저장된 데이터가 중복인건가..?? 왜>?>??
 				// 2500개 >  63278m/s (63.27 초)
 				// 5000개 >  60116m/s (60.11 초)
@@ -118,10 +118,10 @@ public class MovieUserController {
 				}
 				page++;
 			}
-			Instant end = Instant.now();
-			long executionTime = Duration.between(start, end).toMillis();
+//			Instant end = Instant.now();
+//			long executionTime = Duration.between(start, end).toMillis();
 			System.out.println("for문 나옴");
-			System.out.println("걸린 시간		" + executionTime);
+//			System.out.println("걸린 시간		" + executionTime);
 		} catch (MyBatisSystemException e) {
 			Throwable cause = e.getCause();
 		    if (cause != null) {

@@ -8,5 +8,10 @@
     "name": "kakao.auth.clientId",
     "type": "java.lang.String",
     "description": "A description for 'kakao.auth.clientId'"
+  },
+  {
+    "name": "kobis.auth.apiKey",
+    "type": "java.lang.String",
+    "description": "A description for 'kobis.auth.apiKey'"
   }
 ]}
